@@ -35,14 +35,14 @@ class ProductItem extends StatelessWidget {
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
             builder: (ctx, product, _) => IconButton(
-                  icon: Icon(
-                    product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  ),
-                  color: Theme.of(context).accentColor,
-                  onPressed: () {
-                    product.toggleFavoriteStatus();
-                  },
-                ),
+              icon: Icon(
+                product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              ),
+              color: Theme.of(context).accentColor,
+              onPressed: () {
+                product.toggleFavoriteStatus();
+              },
+            ),
           ),
           title: Text(
             product.title,
@@ -54,6 +54,16 @@ class ProductItem extends StatelessWidget {
             ),
             onPressed: () {
               cart.addItem(product.id, product.price, product.title);
+              Scaffold.of(context).hideCurrentSnackBar();
+              // Establish connection to nearest scaffold with of (To the nearest widget that controls the page we're seeing). Vilket är scaffold i product overview
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content:
+                    Text('Added item to cart'),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(label: 'UNDO', onPressed: () {
+                  cart.removeSingleItem(product.id);
+                },),
+              ),);
             },
             color: Theme.of(context).accentColor,
           ),

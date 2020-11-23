@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../providers/orders.dart' as ord;
 
+// Stateful eftersom det endast påverkar den här widgeten, eventuellt child widgets
 class OrderItem extends StatefulWidget {
   final ord.OrderItem order;
 
@@ -40,7 +41,9 @@ class _OrderItemState extends State<OrderItem> {
           if (_expanded)
             Container(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+              // Väljer det som är lägst till höjden
               height: min(widget.order.products.length * 20.0 + 10, 100),
+              // Skulle kunna använda builder här
               child: ListView(
                 children: widget.order.products
                     .map(
