@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import '../providers/products.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -40,7 +41,8 @@ class ProductItem extends StatelessWidget {
               ),
               color: Theme.of(context).accentColor,
               onPressed: () {
-                product.toggleFavoriteStatus();
+                Provider.of<Products>(context, listen: false)
+                    .changeFavoriteStatus(product.id, product);
               },
             ),
           ),
@@ -56,14 +58,18 @@ class ProductItem extends StatelessWidget {
               cart.addItem(product.id, product.price, product.title);
               Scaffold.of(context).hideCurrentSnackBar();
               // Establish connection to nearest scaffold with of (To the nearest widget that controls the page we're seeing). Vilket är scaffold i product overview
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content:
-                    Text('Added item to cart'),
-                duration: Duration(seconds: 2),
-                action: SnackBarAction(label: 'UNDO', onPressed: () {
-                  cart.removeSingleItem(product.id);
-                },),
-              ),);
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Added item to cart'),
+                  duration: Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      cart.removeSingleItem(product.id);
+                    },
+                  ),
+                ),
+              );
             },
             color: Theme.of(context).accentColor,
           ),

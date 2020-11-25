@@ -82,7 +82,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    // Skulle funka att använda async/awaits här också istället för then.  
+    // Skulle funka att använda async/awaits här också istället för then.
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
@@ -93,9 +93,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     if (_editedProduct.id != null) {
       Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
+          .updateProduct(_editedProduct.id, _editedProduct)
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
       });
     } else {
       Provider.of<Products>(context, listen: false)

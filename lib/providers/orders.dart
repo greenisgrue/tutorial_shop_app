@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 import './cart.dart';
 
@@ -23,7 +26,19 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  void addOrder(List<CartItem> cartProducts, double total) {
+  Future <void> addOrder(List<CartItem> cartProducts, double total) async {
+    const url = 'https://flutter-tutorial-a9474.firebaseio.com/orders.json';
+    print(cartProducts.map((item) => print(item)));
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+        }),
+      );
+    }catch (error) {
+      throw error;
+    }
+
     _orders.insert(
       0,
       OrderItem(
@@ -35,4 +50,31 @@ class Orders with ChangeNotifier {
     );
     notifyListeners();
   }
+
+  // Future<void> addProduct(Product product) async {
+  //   const url = 'https://flutter-tutorial-a9474.firebaseio.com/products.json';
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       body: json.encode({
+  //         'title': product.title,
+  //         'description': product.description,
+  //         'imageUrl': product.imageUrl,
+  //         'price': product.price,
+  //         'isFavorite': product.isFavorite,
+  //       }),
+  //     );
+  //     final newProduct = Product(
+  //       title: product.title,
+  //       description: product.description,
+  //       price: product.price,
+  //       imageUrl: product.imageUrl,
+  //       id: json.decode(response.body)['name'],
+  //     );
+  //     _items.add(newProduct);
+  //     notifyListeners();
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
