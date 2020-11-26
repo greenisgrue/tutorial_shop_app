@@ -96,6 +96,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
+      // Gridview, only load items on the screen. Good for long lists
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(),

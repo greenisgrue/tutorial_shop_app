@@ -6,6 +6,9 @@ import 'package:http/http.dart' as http;
 import './product.dart';
 import '../models/http_exception.dart';
 
+  // You should manage filtering locally in the widget, not globally!
+
+
 class Products with ChangeNotifier {
   List<Product> _items = [
     //   Product(

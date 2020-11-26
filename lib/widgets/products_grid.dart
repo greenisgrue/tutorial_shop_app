@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/products.dart';
 import './product_item.dart';
 
+// Använd inte provider om du bara ändrar något i EN widget. I så fall stateful widget
+
 class ProductsGrid extends StatelessWidget {
   final bool showFavs;
 
@@ -14,6 +16,7 @@ class ProductsGrid extends StatelessWidget {
     final productsData = Provider.of<Products>(context);
     final products = showFavs ? productsData.favoriteItems : productsData.items;
     return GridView.builder(
+      // Add const to make sure it doesn't rebuild, save build time
       padding: const EdgeInsets.all(10.0),
       itemCount: products.length,
       itemBuilder: (ctx, i) => ChangeNotifierProvider.value(

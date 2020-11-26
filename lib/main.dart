@@ -28,6 +28,10 @@ class MyApp extends StatelessWidget {
           value: Orders(),
         ),
       ],
+
+      // Best practice att använda create i de här fallen. Men om byta sida, viktigt att rensa, vilket value gör
+      // create: (ctx) => Products()
+
       child: MaterialApp(
           title: 'MyShop',
           theme: ThemeData(
