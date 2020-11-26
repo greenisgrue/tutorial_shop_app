@@ -154,13 +154,4 @@ class Products with ChangeNotifier {
     }
     existingProduct = null;
   }
-
-  Future<void> changeFavoriteStatus(String id, Product product) async {
-    final url = 'https://flutter-tutorial-a9474.firebaseio.com/products/$id.json';
-    product.toggleFavoriteStatus();
-    await http.patch(url,
-          body: json.encode({
-            'isFavorite': product.isFavorite,
-          }));
-  }
 }
