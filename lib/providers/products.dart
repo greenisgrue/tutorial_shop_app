@@ -6,8 +6,7 @@ import 'package:http/http.dart' as http;
 import './product.dart';
 import '../models/http_exception.dart';
 
-  // You should manage filtering locally in the widget, not globally!
-
+// You should manage filtering locally in the widget, not globally!
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -46,6 +45,11 @@ class Products with ChangeNotifier {
   ];
   // var _showFavoritesOnly = false;
 
+  final String authToken;
+  final String userId;
+
+  Products(this.authToken, this.userId, this._items);
+
   List<Product> get items {
     // if (_showFavoritesOnly) {
     //   return _items.where((prodItem) => prodItem.isFavorite).toList();
@@ -71,11 +75,18 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> fetchAndSetProducts() async {
-    const url = 'https://flutter-tutorial-a9474.firebaseio.com/products.json';
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url = 'https://flutter-tutorial-a9474.firebaseio.com/products.json?auth=$authToken&$filterString';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+      url = 'https://flutter-tutorial-a9474.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -83,7 +94,7 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -95,7 +106,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://flutter-tutorial-a9474.firebaseio.com/products.json';
+    final url = 'https://flutter-tutorial-a9474.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         url,
@@ -104,7 +115,7 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
+          'creatorId': userId,
         }),
       );
       final newProduct = Product(
@@ -125,7 +136,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       final url =
-          'https://flutter-tutorial-a9474.firebaseio.com/products/$id.json';
+          'https://flutter-tutorial-a9474.firebaseio.com/products/$id.json?auth=$authToken';
       // Also add try catch for a complete app
       await http.patch(url,
           body: json.encode({
@@ -140,7 +151,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = 'https://flutter-tutorial-a9474.firebaseio.com/products/$id.json';
+    final url =
+        'https://flutter-tutorial-a9474.firebaseio.com/products/$id.json?auth=$authToken';
     // Re-add product if delete fails
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
